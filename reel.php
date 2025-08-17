@@ -79,6 +79,14 @@
         position: relative;
         display: flex;
     }
+      .mute-btn {
+      font-size: 15px;
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
 
     .post-img {
         flex: 1;
@@ -334,17 +342,24 @@
                 </div>
 
                 <!-- Reel Video/Image -->
-                <div class="reel-wrapper mb-3">
+                <div class="reel-wrapper mb-3 position-relative">
                     <?php
-                    echo "
-        <img src='./post.image/{$value['image']}' 
-             alt='' 
-             class='object-fit-cover image-placeholder reel-video d-flex align-items-center justify-content-center'>
+                    $file = $value['image'];
+                    $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                    $videoId = "myVideo$key";
+                    $muteId = "muteIcon$key";
+                    if (in_array($ext, ['mp4', 'webm', 'ogg'])) {
+                        echo "
+    <video id='$videoId' src='./post.image/$file' class='reel-video' autoplay loop muted></video>
+    <i id='$muteId' class='fas fa-volume-mute mute-btn position-absolute end-0 bottom-0'></i>
     ";
+                    } else {
+                        echo "
+        <img src='./post.image/$file' alt='' class='object-fit-cover image-placeholder reel-video d-flex align-items-center justify-content-center'>
+        ";
+                    }
                     ?>
                 </div>
-
-
                 <!-- Action Buttons -->
                 <div class="action-icons d-flex align-items-center mb-2">
                     <i class="bi bi-heart" id="likeBtn"></i>
@@ -377,12 +392,29 @@
 </div>
 <script>
     // Get DOM elements
-    const chatBtns = document.querySelectorAll('[id^="chatBtn"]');
-    const postOverlay = document.getElementById('postOverlay');
-    const closeBtn = document.getElementById('closeBtn');
-    const commentInput = document.getElementById('commentInput');
-    const postCommentBtn = document.getElementById('postCommentBtn');
-    const likeBtns = document.querySelectorAll('[id^="likeBtn"]');
+    let chatBtns = document.querySelectorAll('[id^="chatBtn"]');
+    let postOverlay = document.getElementById('postOverlay');
+    let closeBtn = document.getElementById('closeBtn');
+    let commentInput = document.getElementById('commentInput');
+    let postCommentBtn = document.getElementById('postCommentBtn');
+
+    
+  document.querySelectorAll('.mute-btn').forEach(function(muteIcon) {
+    muteIcon.addEventListener("click", function() {
+        const index = this.id.replace('muteIcon', '');
+        const video = document.getElementById('myVideo' + index);
+        if (video) {
+            video.muted = !video.muted;
+            if (video.muted) {
+                this.classList.remove("fa-volume-up");
+                this.classList.add("fa-volume-mute");
+            } else {
+                this.classList.remove("fa-volume-mute");
+                this.classList.add("fa-volume-up");
+            }
+        }
+    });
+});
 
     // Add event listeners for chat buttons
     chatBtns.forEach(btn => {

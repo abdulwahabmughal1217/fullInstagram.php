@@ -122,7 +122,6 @@ fileInput.addEventListener("input", function (e) {
         video.controls = true;
         video.play();
     }
-
     // Common UI changes for both
     document.querySelector(".p-body").classList.add("d-none");
     document.querySelector(".post-right").classList.remove("d-none");
